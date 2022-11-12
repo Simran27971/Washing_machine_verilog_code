@@ -1,6 +1,4 @@
-/* 
- * Do not change Module name 
-*/
+
 module washing_machine(output reg idle,soak_low,soak_high,wash_low,wash_high,rinse,spin,drain,input clk,rst,start,select,stop,timer_soak_low,timer_soak_high,timer_wash_low,timer_wash_high,timer_spin,timer_rinse,timer_drain);
 
 
