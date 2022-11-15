@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 
 module washing_machine(output reg idle,soak_low,soak_high,wash_low,wash_high,rinse,spin,drain,input clk,rst,start,select,stop,timer_soak_low,timer_soak_high,timer_wash_low,timer_wash_high,timer_spin,timer_rinse,timer_drain);
 
@@ -18,299 +19,323 @@ parameter SPIN=3'b110;
 
 
 
-always@(cs or start or timer_soak_low or timer_soak_high or timer_wash_low or timer_wash_high or timer_spin or timer_rinse  or stop)
+always@(cs or start or timer_soak_low or timer_soak_high or timer_wash_low or timer_wash_high or timer_spin or timer_rinse  or timer_drain or stop)
 
 begin
 
 case(cs)
-        IDLE:
-            if(start==1 && select==0)
+IDLE:
+     if(start==1 && select==0 && timer_soak_low==1 && timer_soak_high==0 && timer_wash_low==0 && timer_wash_high==0 && timer_spin==0 && timer_rinse==0 && timer_drain==0 && stop==0)
                          begin
-                         ns=SOAK;
-                         soak_low=1;
-                         soak_high=0;
-                         wash_low=0;
-                         wash_high=0;
-                         drain=0;
-                         rinse=0;
-                         spin=0;
+                         ns<=SOAK;
+                         soak_low<=1;
+                         soak_high<=0;
+                         wash_low<=0;
+                         wash_high<=0;
+                         drain<=0;
+                         rinse<=0;
+                         spin<=0;
+                         idle<=0;
                          end
-            else if(start==1 && select==1)
+     else if(start==1 && select==1 && timer_soak_low==0 && timer_soak_high==1 && timer_wash_low==0 && timer_wash_high==0 && timer_spin==0 && timer_drain==0 && timer_rinse==0  && stop==0)
                         begin
-                        ns=cs;
-                        soak_low=0;
-                        soak_high=1;
-                        wash_low=0;
-                        wash_high=0;
-                        drain=0;
-                        rinse=0;
-                        spin=0;
+                        ns<=SOAK2;
+                        soak_low<=0;
+                        soak_high<=1;
+                        wash_low<=0;
+                        wash_high<=0;
+                        drain<=0;
+                        rinse<=0;
+                        spin<=0;
+                        idle<=0;
                         end
-            else
+      else
                         begin
-                        ns=cs;
-                        soak_low=0;
-                        soak_high=0;
-                        wash_low=0;
-                        wash_high=0;
-                        drain=0;
-                        rinse=0;
-                        spin=0;
+                        ns<=cs;
+                        soak_low<=0;
+                        soak_high<=0;
+                        wash_low<=0;
+                        wash_high<=0;
+                        drain<=0;
+                        rinse<=0;
+                        spin<=0;
+                        idle<=0;
                         end
         
-        SOAK:
-           if(timer_soak_low==1)
+SOAK:
+           if(start==1 && select==0 && timer_soak_low==0 && timer_soak_high==0 && timer_wash_low==1 && timer_wash_high==0 && timer_spin==0 && timer_drain==0 && timer_rinse==0  && stop==0)
                            begin
-                            ns=WASH;
-                            soak_low=0;
-                            soak_high=0;
-                            wash_low=1;
-                            wash_high=0;
-                            drain=0;
-                            rinse=0;
-                            spin=0;
+                            ns<=WASH;
+                            soak_low<=0;
+                            soak_high<=0;
+                            wash_low<=1;
+                            wash_high<=0;
+                            drain<=0;
+                            rinse<=0;
+                            spin<=0;
+                            idle<=0;
                             end
 
             else if(stop==1)
                 begin
-                ns=IDLE;
-                soak_low=0;
-                soak_high=0;
-                wash_low=0;
-                wash_high=0;
-                drain=0;
-                rinse=0;
-                spin=0;
+                ns<=IDLE;
+                soak_low<=0;
+                soak_high<=0;
+                wash_low<=0;
+                wash_high<=0;
+                drain<=0;
+                rinse<=0;
+                spin<=0;
+                idle<=1;
                 end
                 
             else
                 begin
-                ns=cs;
-                soak_low=1;
-                soak_high=0;
-                wash_low=0;
-                wash_high=0;
-                drain=0;
-                rinse=0;
-                spin=0;
+                ns<=cs;
+                soak_low<=1;
+                soak_high<=0;
+                wash_low<=0;
+                wash_high<=0;
+                drain<=0;
+                rinse<=0;
+                spin<=0;
+                idle<=0;
                 end
                 
-        SOAK2:
-           if(timer_soak_high==1)
+SOAK2:
+           if(start==1 && select==1 && timer_soak_low==0 && timer_soak_high==0 && timer_wash_low==0 && timer_wash_high==1 && timer_spin==0 && timer_drain==0 && timer_rinse==0  && stop==0)
                             begin
-                            ns=WASH2;
-                            soak_low=0;
-                            soak_high=0;
-                            wash_low=0;
-                            wash_high=1;
-                            drain=0;
-                            rinse=0;
-                            spin=0;
+                            ns<= WASH2;
+                            soak_low<=0;
+                            soak_high<=0;
+                            wash_low<=0;
+                            wash_high<=1;
+                            drain<=0;
+                            rinse<=0;
+                            spin<=0;
+                            idle<=0;
                             end
             else if(stop==1)
                 begin
-                ns=IDLE;
-                soak_low=0;
-                soak_high=0;
-                wash_low=0;
-                wash_high=0;
-                drain=0;
-                rinse=0;
-                spin=0;
+                ns<=IDLE;
+                soak_low<=0;
+                soak_high<=0;
+                wash_low<=0;
+                wash_high<=0;
+                drain<=0;
+                rinse<=0;
+                spin<=0;
+                idle<=1;
                 end
                 
             else
                 begin
-                ns=cs;
-                soak_low=0;
-                soak_high=1;
-                wash_low=0;
-                wash_high=0;
-                drain=0;
-                rinse=0;
-                spin=0;
+                ns<=cs;
+                soak_low<=0;
+                soak_high<=1;
+                wash_low<=0;
+                wash_high<=0;
+                drain<=0;
+                rinse<=0;
+                spin<=0;
+                idle<=0;
                 end
                             
             
-        WASH:
-            if(timer_wash_low==1)
+WASH:
+            if(start==1 && select==0 && timer_soak_low==0 && timer_soak_high==0 && timer_wash_low==0 && timer_wash_high==0 && timer_spin==0 && timer_drain==1 && timer_rinse==0  && stop==0)
                                 begin
-                                ns=DRAIN;
-                                soak_low=0;
-                                soak_high=0;
-                                wash_low=0;
-                                wash_high=0;
-                                drain=1;
-                                rinse=0;
-                                spin=0;
+                                ns<=DRAIN;
+                                soak_low<=0;
+                                soak_high<=0;
+                                wash_low<=0;
+                                wash_high<=0;
+                                drain<=1;
+                                rinse<=0;
+                                spin<=0;
+                                idle<=0;
                                 end
             else if(stop==1)
                            begin
-                           ns=IDLE;
-                           soak_low=0;
-                           soak_high=0;
-                           wash_low=0;
-                           wash_high=0;
-                           drain=0;
-                           rinse=0;
-                           spin=0;
+                           ns<=IDLE;
+                           soak_low<=0;
+                           soak_high<=0;
+                           wash_low<=0;
+                           wash_high<=0;
+                           drain<=0;
+                           rinse<=0;
+                           spin<=0;
+                           idle<=1;
                            end  
                 
             else
                 begin
-                ns=cs;
-                soak_low=0;
-                soak_high=0;
-                wash_low=1;
-                wash_high=0;
-                drain=0;
-                rinse=0;
-                spin=0;
+                ns<=cs;
+                soak_low<=0;
+                soak_high<=0;
+                wash_low<=1;
+                wash_high<=0;
+                drain<=0;
+                rinse<=0;
+                spin<=0;
+                idle<=0;
                 end  
                         
-        WASH2:
-            if(timer_wash_high==1)
+WASH2:
+      if(start==1 && select==1 && timer_soak_low==0 && timer_soak_high==0 && timer_wash_low==0 && timer_wash_high==0 && timer_spin==0 && timer_drain==1 && timer_rinse==0  && stop==0)
                                 begin
-                                ns=DRAIN;
-                                soak_low=0;
-                                soak_high=0;
-                                wash_low=0;
-                                wash_high=0;
-                                drain=1;
-                                rinse=0;
-                                spin=0;
+                                ns<=DRAIN;
+                                soak_low<=0;
+                                soak_high<=0;
+                                wash_low<=0;
+                                wash_high<=0;
+                                drain<=1;
+                                rinse<=0;
+                                spin<=0;
+                                idle<=0;
                                 end
             else if(stop==1)
                            begin
-                           ns=IDLE;
-                           soak_low=0;
-                           soak_high=0;
-                           wash_low=0;
-                           wash_high=0;
-                           drain=0;
-                           rinse=0;
-                           spin=0;
+                           ns<=IDLE;
+                           soak_low<=0;
+                           soak_high<=0;
+                           wash_low<=0;
+                           wash_high<=0;
+                           drain<=0;
+                           rinse<=0;
+                           spin<=0;
+                           idle<=1;
                            end                  
             else
                 begin
-                ns=cs;
-                soak_low=0;
-                soak_high=0;
-                wash_low=0;
-                wash_high=1;
-                drain=0;
-                rinse=0;
-                spin=0;
+                ns<=cs;
+                soak_low<=0;
+                soak_high<=0;
+                wash_low<=0;
+                wash_high<=1;
+                drain<=0;
+                rinse<=0;
+                spin<=0;
+                idle<=0;
                 end 
                 
                 
-        DRAIN:
-            if(timer_drain==1)
+DRAIN:
+            if(start==1 &&  timer_soak_low==0 && timer_soak_high==0 && timer_wash_low==0 && timer_wash_high==0 && timer_spin==0 && timer_drain==1 && timer_rinse==1  && stop==0)
                              begin
-                             ns=RINSE;
-                             soak_low=0;
-                             soak_high=0;
-                             wash_low=0;
-                             wash_high=0;
-                             drain=1;
-                             rinse=1;
-                             spin=0;
+                             ns<=RINSE;
+                             soak_low<=0;
+                             soak_high<=0;
+                             wash_low<=0;
+                             wash_high<=0;
+                             drain<=1;
+                             rinse<=1;
+                             spin<=0;
+                             idle<=0;
                              end
             else if(stop==1)
                            begin
-                           ns=IDLE;
-                           soak_low=0;
-                           soak_high=0;
-                           wash_low=0;
-                           wash_high=0;
-                           drain=0;
-                           rinse=0;
-                           spin=0;
+                           ns<=IDLE;
+                           soak_low<=0;
+                           soak_high<=0;
+                           wash_low<=0;
+                           wash_high<=0;
+                           drain<=0;
+                           rinse<=0;
+                           spin<=0;
+                           idle<=1;
                            end  
             else
                 begin
-                ns=cs;
-                soak_low=0;
-                soak_high=0;
-                wash_low=0;
-                wash_high=0;
-                drain=1;
-                rinse=0;
-                spin=0;
+                ns<=cs;
+                soak_low<=0;
+                soak_high<=0;
+                wash_low<=0;
+                wash_high<=0;
+                drain<=1;
+                rinse<=0;
+                spin<=0;
+                idle<=0;
                 end 
         
-        RINSE:
-            if(timer_rinse==1)
+RINSE:
+            if(start==1 &&  timer_soak_low==0 && timer_soak_high==0 && timer_wash_low==0 && timer_wash_high==0 && timer_spin==1 && timer_drain==1 && timer_rinse==0  && stop==0)
                              begin
-                             ns=SPIN;
-                             soak_low=0;
-                             soak_high=0;
-                             wash_low=0;
-                             wash_high=0;
-                             drain=1;
-                             rinse=0;
-                             spin=1;
+                             ns<=SPIN;
+                             soak_low<=0;
+                             soak_high<=0;
+                             wash_low<=0;
+                             wash_high<=0;
+                             drain<=1;
+                             rinse<=0;
+                             spin<=1;
+                             idle<=0;
                              end 
             else if(stop==1)
                            begin
-                           ns=IDLE;
-                           soak_low=0;
-                           soak_high=0;
-                           wash_low=0;
-                           wash_high=0;
-                           drain=0;
-                           rinse=0;
-                           spin=0;
+                           ns<=IDLE;
+                           soak_low<=0;
+                           soak_high<=0;
+                           wash_low<=0;
+                           wash_high<=0;
+                           drain<=0;
+                           rinse<=0;
+                           spin<=0;
+                           idle<=1;
                            end              
             else
                 begin
-                ns=cs;
-                soak_low=0;
-                soak_high=0;
-                wash_low=0;
-                wash_high=0;
-                drain=1;
-                rinse=1;
-                spin=0;
+                ns<=cs;
+                soak_low<=0;
+                soak_high<=0;
+                wash_low<=0;
+                wash_high<=0;
+                drain<=1;
+                rinse<=1;
+                spin<=0;
+                idle<=0;
                 end 
         
-        SPIN:
-            if(timer_spin==1)
+SPIN:
+            if(start==1 &&  timer_soak_low==0 && timer_soak_high==0 && timer_wash_low==0 && timer_wash_high==0 && timer_spin==0 && timer_drain==0 && timer_rinse==0  && stop==0)
                              begin
-                             ns=IDLE;
-                             soak_low=0;
-                             soak_high=0;
-                             wash_low=0;
-                             wash_high=0;
-                             drain=0;
-                             rinse=0;
-                             spin=0;
+                             ns<=IDLE;
+                             soak_low<=0;
+                             soak_high<=0;
+                             wash_low<=0;
+                             wash_high<=0;
+                             drain<=0;
+                             rinse<=0;
+                             spin<=0;
+                             idle<=1;
                              end 
             else if(stop==1)
                            begin
-                           ns=IDLE;
-                           soak_low=0;
-                           soak_high=0;
-                           wash_low=0;
-                           wash_high=0;
-                           drain=0;
-                           rinse=0;
-                           spin=0;
+                           ns<=IDLE;
+                           soak_low<=0;
+                           soak_high<=0;
+                           wash_low<=0;
+                           wash_high<=0;
+                           drain<=0;
+                           rinse<=0;
+                           spin<=0;
+                           idle<=1;
                            end                               
             else
                 begin
-                ns=cs;
-                soak_low=0;
-                soak_high=0;
-                wash_low=0;
-                wash_high=0;
-                drain=0;
-                rinse=0;
-                spin=0;
+                ns<=cs;
+                soak_low<=0;
+                soak_high<=0;
+                wash_low<=0;
+                wash_high<=0;
+                drain<=0;
+                rinse<=0;
+                spin<=0;
+                idle<=0;
                 end 
         
         default:
-            ns=IDLE;
+            ns<=IDLE;
                 
 endcase
 end
@@ -326,7 +351,38 @@ begin
 
             
             
-          
+            
+
+            
+            
+            
+            
+            
+            
+            
+            
+
+            
+         
+            
+            
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
